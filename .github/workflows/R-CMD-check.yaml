@@ -1,4 +1,4 @@
-cat('on:
+on:
   push:
     branches: [main, master]
   pull_request:
@@ -26,5 +26,4 @@ jobs:
 
       - uses: r-lib/actions/check-r-package@v2
         with:
-          args: c("--no-manual", "--as-cran")
-', file = ".github/workflows/R-CMD-check.yaml")
+          args: 'c("--no-manual", "--as-cran")'

@@ -1,4 +1,4 @@
-cat('on:
+on:
   push:
     branches: [main, master]
   pull_request:
@@ -27,4 +27,3 @@ jobs:
       - name: Test coverage
         run: covr::codecov()
         shell: Rscript {0}
-', file = ".github/workflows/test-coverage.yaml")
