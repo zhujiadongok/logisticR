@@ -1,5 +1,11 @@
 # logisticR
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/zhujiadongok/logisticR/workflows/R-CMD-check/badge.svg)](https://github.com/zhujiadongok/logisticR/actions)
+[![Codecov test coverage](https://codecov.io/gh/zhujiadongok/logisticR/branch/main/graph/badge.svg)](https://codecov.io/gh/zhujiadongok/logisticR?branch=main)
+<!-- badges: end -->
+
+
 An efficient R package for binary logistic regression using gradient descent.
 
 ## Installation
