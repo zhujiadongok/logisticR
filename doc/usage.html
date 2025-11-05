@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Introduction to logisticR</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to logisticR</h1>
+
+
+
+<div id="overview" class="section level2">
+<h2>Overview</h2>
+<p>The <code>logisticR</code> package provides an efficient
+implementation of binary logistic regression using gradient descent.</p>
+</div>
+<div id="installation" class="section level2">
+<h2>Installation</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;yourusername/logisticR&quot;</span>)</span></code></pre></div>
+</div>
+<div id="basic-usage" class="section level2">
+<h2>Basic Usage</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(logisticR)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># Generate sample data</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">300</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(n <span class="sc">*</span> <span class="dv">2</span>), <span class="at">ncol =</span> <span class="dv">2</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>true_beta <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.5</span>, <span class="fl">1.0</span>, <span class="sc">-</span><span class="fl">1.5</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>logits <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="dv">1</span>, X) <span class="sc">%*%</span> true_beta</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>probs <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(<span class="sc">-</span>logits))</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(n, <span class="dv">1</span>, probs)</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co"># Fit model</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">my_logistic</span>(X, y, <span class="at">learning_rate =</span> <span class="fl">0.1</span>, <span class="at">max_iter =</span> <span class="dv">2000</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="fu">print</span>(model)</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt; Logistic Regression Model</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt; Coefficients:</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt;            [,1]</span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt; [1,] -0.7163057</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt; [2,]  0.9393210</span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co">#&gt; [3,] -1.6996190</span></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co">#&gt; attr(,&quot;names&quot;)</span></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a><span class="co">#&gt; [1] &quot;(Intercept)&quot; &quot;X1&quot;          &quot;X2&quot;         </span></span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a><span class="co">#&gt; Converged: TRUE </span></span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a><span class="co">#&gt; Iterations: 984</span></span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a><span class="fu">summary</span>(model)</span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a><span class="co">#&gt; Logistic Regression Model Summary</span></span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a><span class="co">#&gt; =================================</span></span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a><span class="co">#&gt; Coefficients:</span></span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a><span class="co">#&gt;     Estimate</span></span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a><span class="co">#&gt; 1 -0.7163057</span></span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a><span class="co">#&gt; 2  0.9393210</span></span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a><span class="co">#&gt; 3 -1.6996190</span></span>
+<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a><span class="co">#&gt; Convergence: YES</span></span>
+<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a><span class="co">#&gt; Iterations: 984</span></span>
+<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a><span class="co">#&gt; Final log-likelihood: -134.0582</span></span>
+<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a><span class="co">#&gt; Number of observations: 300</span></span></code></pre></div>
+</div>
+<div id="making-predictions" class="section level2">
+<h2>Making Predictions</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Predict probabilities</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>pred_probs <span class="ot">&lt;-</span> <span class="fu">predict</span>(model, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">head</span>(pred_probs)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; [1] 0.4932172 0.5858337 0.9123746 0.7574585 0.5369678 0.5822003</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co"># Predict classes</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>pred_class <span class="ot">&lt;-</span> <span class="fu">predict</span>(model, <span class="at">type =</span> <span class="st">&quot;class&quot;</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="fu">table</span>(<span class="at">Predicted =</span> pred_class, <span class="at">Actual =</span> y)</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt;          Actual</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; Predicted   0   1</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt;         0 156  44</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt;         1  28  72</span></span></code></pre></div>
+</div>
+<div id="using-credit-data" class="section level2">
+<h2>Using Credit Data</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">data</span>(credit_data)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">head</span>(credit_data)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt;        age   income debt_ratio default</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt; 1 35.26117 57197.39  0.9998111       1</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; 2 48.33430 11899.06  0.8611967       1</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; 3 36.81789 74030.87  0.4814899       1</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt; 4 34.84750 57592.19  0.5972190       1</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; 5 42.65861 18957.59  0.7958938       1</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; 6 27.71531 39269.23  0.8634159       1</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co"># Prepare data</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>X_credit <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(credit_data[, <span class="fu">c</span>(<span class="st">&quot;age&quot;</span>, <span class="st">&quot;income&quot;</span>, <span class="st">&quot;debt_ratio&quot;</span>)])</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>y_credit <span class="ot">&lt;-</span> credit_data<span class="sc">$</span>default</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co"># Fit model</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>credit_model <span class="ot">&lt;-</span> <span class="fu">my_logistic</span>(X_credit, y_credit, <span class="at">learning_rate =</span> <span class="fl">0.01</span>, <span class="at">max_iter =</span> <span class="dv">3000</span>)</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="fu">summary</span>(credit_model)</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#&gt; Logistic Regression Model Summary</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#&gt; =================================</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#&gt; Coefficients:</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt;                Estimate</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="co">#&gt;            7.800000e-04</span></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a><span class="co">#&gt; age        6.283552e-02</span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a><span class="co">#&gt; income     1.230043e+02</span></span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="co">#&gt; debt_ratio 3.169502e-03</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="co">#&gt; Convergence: YES</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co">#&gt; Iterations: 5</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="co">#&gt; Final log-likelihood: -4870.08</span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="co">#&gt; Number of observations: 500</span></span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a><span class="co"># Predictions</span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a>credit_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(credit_model, <span class="at">type =</span> <span class="st">&quot;class&quot;</span>)</span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a>confusion <span class="ot">&lt;-</span> <span class="fu">table</span>(<span class="at">Predicted =</span> credit_pred, <span class="at">Actual =</span> y_credit)</span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a>confusion</span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a><span class="co">#&gt;          Actual</span></span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a><span class="co">#&gt; Predicted   0   1</span></span>
+<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a><span class="co">#&gt;         0   2   0</span></span>
+<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a><span class="co">#&gt;         1 141 357</span></span>
+<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a></span>
+<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a><span class="co"># Accuracy</span></span>
+<span id="cb4-43"><a href="#cb4-43" tabindex="-1"></a>accuracy <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">diag</span>(confusion)) <span class="sc">/</span> <span class="fu">sum</span>(confusion)</span>
+<span id="cb4-44"><a href="#cb4-44" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Accuracy:&quot;</span>, <span class="fu">round</span>(accuracy, <span class="dv">4</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb4-45"><a href="#cb4-45" tabindex="-1"></a><span class="co">#&gt; Accuracy: 0.718</span></span></code></pre></div>
+</div>
+<div id="comparison-with-glm---correctness" class="section level2">
+<h2>Comparison with glm() - Correctness</h2>
+<p>Let’s verify that our implementation produces similar results to R’s
+built-in <code>glm()</code>:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Fit using our package</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>model_ours <span class="ot">&lt;-</span> <span class="fu">my_logistic</span>(X, y, <span class="at">learning_rate =</span> <span class="fl">0.1</span>, <span class="at">max_iter =</span> <span class="dv">2000</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># Fit using glm</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>glm_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> X, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&quot;logit&quot;</span>))</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co"># Compare coefficients</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>comparison <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  <span class="at">logisticR =</span> <span class="fu">coef</span>(model_ours),</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="at">glm =</span> <span class="fu">coef</span>(glm_model),</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  <span class="at">difference =</span> <span class="fu">abs</span>(<span class="fu">coef</span>(model_ours) <span class="sc">-</span> <span class="fu">coef</span>(glm_model))</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>)</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="fu">print</span>(comparison)</span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt;              logisticR       glm   difference</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt; (Intercept) -0.7163057 -0.717245 0.0009392779</span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co">#&gt; X1           0.9393210  0.940751 0.0014299988</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co">#&gt; X2          -1.6996190 -1.702212 0.0025934643</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="co"># Check if approximately equal</span></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a><span class="fu">all.equal</span>(<span class="fu">coef</span>(model_ours), <span class="fu">coef</span>(glm_model), <span class="at">tolerance =</span> <span class="fl">0.01</span>)</span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Attributes: &lt; names for target but not for current &gt;&quot;             </span></span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a><span class="co">#&gt; [2] &quot;Attributes: &lt; Length mismatch: comparison on first 0 components &gt;&quot;</span></span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a><span class="co">#&gt; [3] &quot;target is matrix, current is numeric&quot;</span></span></code></pre></div>
+<p>The coefficients are very similar, demonstrating the correctness of
+our implementation!</p>
+</div>
+<div id="performance-comparison" class="section level2">
+<h2>Performance Comparison</h2>
+<p>Now let’s compare computational efficiency using the
+<code>bench</code> package:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">library</span>(bench)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt; Warning: package &#39;bench&#39; was built under R version 4.5.2</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co"># Benchmark on moderate-sized data</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">456</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>n_bench <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>X_bench <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(n_bench <span class="sc">*</span> <span class="dv">3</span>), <span class="at">ncol =</span> <span class="dv">3</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>y_bench <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(n_bench, <span class="dv">1</span>, <span class="fl">0.5</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>benchmark_results <span class="ot">&lt;-</span> <span class="fu">mark</span>(</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>  <span class="at">logisticR =</span> <span class="fu">my_logistic</span>(X_bench, y_bench, <span class="at">learning_rate =</span> <span class="fl">0.1</span>, <span class="at">max_iter =</span> <span class="dv">1000</span>),</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>  <span class="at">glm =</span> <span class="fu">glm</span>(y_bench <span class="sc">~</span> X_bench, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&quot;logit&quot;</span>)),</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>  <span class="at">check =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>  <span class="at">iterations =</span> <span class="dv">10</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>)</span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="fu">print</span>(benchmark_results[, <span class="fu">c</span>(<span class="st">&quot;expression&quot;</span>, <span class="st">&quot;median&quot;</span>, <span class="st">&quot;mem_alloc&quot;</span>)])</span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 3</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt;   expression   median mem_alloc</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="co">#&gt;   &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:byt&gt;</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co">#&gt; 1 logisticR   33.11ms   20.28MB</span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#&gt; 2 glm          1.99ms    1.59MB</span></span></code></pre></div>
+<div id="visualize-performance" class="section level3">
+<h3>Visualize Performance</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>perf_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="at">Method =</span> <span class="fu">c</span>(<span class="st">&quot;logisticR&quot;</span>, <span class="st">&quot;glm&quot;</span>),</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="at">Time =</span> <span class="fu">as.numeric</span>(benchmark_results<span class="sc">$</span>median)</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>)</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="fu">ggplot</span>(perf_data, <span class="fu">aes</span>(<span class="at">x =</span> Method, <span class="at">y =</span> Time, <span class="at">fill =</span> Method)) <span class="sc">+</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">&quot;identity&quot;</span>) <span class="sc">+</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Performance Comparison&quot;</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Median Time (seconds)&quot;</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Method&quot;</span>) <span class="sc">+</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+</div>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>The <code>logisticR</code> package provides:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Correct implementation</strong>: Coefficients match
+<code>glm()</code> closely</li>
+<li><strong>Easy to use</strong>: Simple API with sensible defaults</li>
+<li><strong>Well documented</strong>: Clear documentation and
+examples</li>
+</ol>
+</div>
+<div id="session-info" class="section level2">
+<h2>Session Info</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co">#&gt; R version 4.5.0 (2025-04-11 ucrt)</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">#&gt; Platform: x86_64-w64-mingw32/x64</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#&gt; Running under: Windows 11 x64 (build 26100)</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt; Matrix products: default</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt;   LAPACK version 3.12.1</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; locale:</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; [1] LC_COLLATE=Chinese (Simplified)_China.utf8 </span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt; [2] LC_CTYPE=Chinese (Simplified)_China.utf8   </span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt; [3] LC_MONETARY=Chinese (Simplified)_China.utf8</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; [4] LC_NUMERIC=C                               </span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; [5] LC_TIME=Chinese (Simplified)_China.utf8    </span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt; time zone: America/New_York</span></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co">#&gt; tzcode source: internal</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co">#&gt; attached base packages:</span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="co">#&gt; other attached packages:</span></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="co">#&gt; [1] ggplot2_3.5.2   bench_1.1.4     logisticR_0.1.0</span></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a><span class="co">#&gt;  [1] vctrs_0.6.5       cli_3.6.5         knitr_1.50        rlang_1.1.6      </span></span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a><span class="co">#&gt;  [5] xfun_0.52         generics_0.1.3    jsonlite_2.0.0    labeling_0.4.3   </span></span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a><span class="co">#&gt;  [9] glue_1.8.0        colorspace_2.1-1  htmltools_0.5.8.1 sass_0.4.10      </span></span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a><span class="co">#&gt; [13] scales_1.3.0      rmarkdown_2.29    grid_4.5.0        munsell_0.5.1    </span></span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a><span class="co">#&gt; [17] evaluate_1.0.3    jquerylib_0.1.4   tibble_3.2.1      fastmap_1.2.0    </span></span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a><span class="co">#&gt; [21] yaml_2.3.10       profmem_0.7.0     lifecycle_1.0.4   compiler_4.5.0   </span></span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a><span class="co">#&gt; [25] dplyr_1.1.4       pkgconfig_2.0.3   rstudioapi_0.17.1 farver_2.1.2     </span></span>
+<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a><span class="co">#&gt; [29] digest_0.6.37     R6_2.6.1          tidyselect_1.2.1  utf8_1.2.4       </span></span>
+<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a><span class="co">#&gt; [33] pillar_1.10.2     magrittr_2.0.3    bslib_0.9.0       withr_3.0.2      </span></span>
+<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a><span class="co">#&gt; [37] gtable_0.3.6      tools_4.5.0       cachem_1.1.0</span></span></code></pre></div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
