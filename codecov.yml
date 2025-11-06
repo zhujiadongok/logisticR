@@ -1,4 +1,4 @@
-cat('comment: false
+comment: false
 
 coverage:
   status:
@@ -10,4 +10,3 @@ coverage:
       default:
         target: auto
         threshold: 1%
-', file = "codecov.yml")
