@@ -33,13 +33,13 @@ classes <- predict(model, type = "class")
 
 ## Features
 
-- ✅ Pure R implementation using gradient descent
-- ✅ C++ accelerated version via Rcpp (1.18x speedup)
-- ✅ Easy-to-use S3 methods (print, summary, predict)
-- ✅ Sample credit default dataset included
-- ✅ Comprehensive unit tests (23 tests, 100% pass rate)
-- ✅ Detailed vignette with benchmarks
-- ✅ CI/CD with GitHub Actions
+- Pure R implementation using gradient descent
+- C++ accelerated version via Rcpp (1.18x speedup)
+- Easy-to-use S3 methods (print, summary, predict)
+- Sample credit default dataset included
+- Comprehensive unit tests (23 tests, 100% pass rate)
+- Detailed vignette with benchmarks
+- CI/CD with GitHub Actions
 
 ## C++ Accelerated Version
 
