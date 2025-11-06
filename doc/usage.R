@@ -7,10 +7,11 @@ knitr::opts_chunk$set(
 )
 
 ## ----eval=FALSE---------------------------------------------------------------
-# devtools::install_github("yourusername/logisticR")
+# devtools::install_github("zhujiadongok/logisticR")
 
 ## -----------------------------------------------------------------------------
 library(logisticR)
+library(ggplot2)
 
 # Generate sample data
 set.seed(123)
@@ -91,6 +92,51 @@ benchmark_results <- mark(
 )
 
 print(benchmark_results[, c("expression", "median", "mem_alloc")])
+
+## -----------------------------------------------------------------------------
+# Fit using C++ version
+set.seed(123)
+model_cpp <- my_logistic_cpp(X, y, learning_rate = 0.1, max_iter = 2000)
+
+# Compare with R version
+model_r <- my_logistic(X, y, learning_rate = 0.1, max_iter = 2000)
+
+# Verify coefficients match
+all.equal(coef(model_r), coef(model_cpp), tolerance = 0.001)
+
+## -----------------------------------------------------------------------------
+# Larger dataset for meaningful comparison
+set.seed(789)
+n_large <- 2000
+X_large <- matrix(rnorm(n_large * 5), ncol = 5)
+y_large <- rbinom(n_large, 1, 0.5)
+
+speed_comparison <- mark(
+  R_version = my_logistic(X_large, y_large, learning_rate = 0.1, max_iter = 300),
+  Cpp_version = my_logistic_cpp(X_large, y_large, learning_rate = 0.1, max_iter = 300),
+  check = FALSE,
+  iterations = 5
+)
+
+print(speed_comparison[, c("expression", "median", "mem_alloc")])
+
+# Calculate speedup
+speedup <- as.numeric(speed_comparison$median[1]) / as.numeric(speed_comparison$median[2])
+cat("\nC++ speedup:", round(speedup, 2), "x faster\n")
+
+## -----------------------------------------------------------------------------
+perf_data_cpp <- data.frame(
+  Method = c("R", "C++"),
+  Time = as.numeric(speed_comparison$median)
+)
+
+ggplot(perf_data_cpp, aes(x = Method, y = Time, fill = Method)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Performance Comparison: R vs C++",
+       y = "Median Time (seconds)",
+       x = "Implementation") +
+  theme_minimal() +
+  theme(legend.position = "none")
 
 ## -----------------------------------------------------------------------------
 library(ggplot2)

@@ -34,11 +34,11 @@ classes <- predict(model, type = "class")
 
 ## Features
 
-- ✅ Pure R implementation using gradient descent
-- ✅ Easy-to-use predict and summary methods
-- ✅ Sample credit default dataset included
-- ✅ Comprehensive unit tests (15 tests, 100% pass rate)
-- ✅ Detailed vignette with benchmarks
+- Pure R implementation using gradient descent
+- Easy-to-use predict and summary methods
+- Sample credit default dataset included
+- Comprehensive unit tests (15 tests, 100% pass rate)
+- Detailed vignette with benchmarks
 
 ## Example with Credit Data
 ```r
